@@ -7,13 +7,17 @@ let numOfClicks = 0;
 let numOfPairs = 0;
 let numOfMatches = 0;
 let duration = 21;
+let startGame = false;
 
 // Number of cards for each difficulty setting.
 const normal = 12;
 const hard = 18;
 let difficulty = normal;
 
+// Sets up the board based on the difficulty level chosen. 
 async function setBoard(numCards) {
+  startGame = true;
+  
   document.getElementsByClassName('memory-game')[0].innerHTML = "";
   numOfPairs = numCards/2;
   if (numCards == hard) {
@@ -42,8 +46,8 @@ async function setBoard(numCards) {
   }
   updateScore();
 }
-setBoard(normal);
 
+// Resets the game. 
 function resetGame() {
   numOfClicks = 0;
   numOfMatches = 0;
@@ -75,12 +79,14 @@ function flipCard() {
   checkForMatch();
 }
 
+// Check if the two flipped cards match.
 function checkForMatch() {
   let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
 
   isMatch ? disableCards() : unflipCards();
 }
 
+// Removes matched cards from the game.
 function disableCards() {
   firstCard.removeEventListener('click', flipCard);
   secondCard.removeEventListener('click', flipCard);
@@ -105,11 +111,13 @@ function unflipCards() {
   }, 750);
 }
 
+// Resets remaining active cards on the board. 
 function resetBoard() {
   [hasFlippedCard, lockBoard] = [false, false];
   [firstCard, secondCard] = [null, null];
 }
 
+// Updates the score header.
 function updateScore() {
   document.getElementById('score').innerHTML 
     = "Number of Pairs: " + numOfPairs + "<br>" 
@@ -118,37 +126,34 @@ function updateScore() {
     + "Number of Pairs Left: " + (numOfPairs - numOfMatches);
 }
 
+// Set timer.
 const countdown = setInterval(() => {
-  duration--;
-  document.getElementById('timer').innerHTML = "Time left: " + duration + "s"
-  if (duration < 0) {
-    clearInterval(countdown);
-    alert("You lose!");
+  if (startGame == true) {
+    duration--;
+    document.getElementById('timer').innerHTML = "Time left: " + duration + "s"
+    if (duration < 0) {
+      clearInterval(countdown);
+      alert("You lose!");
+    }
   }
 }, 1000);
 
+// Power up to flip all cards.
 function powerUp() {
   for (let i = 0; i < difficulty; i++) {
     document.getElementsByClassName('memory-card')[i].classList.add('flip');
     setTimeout(() => {
       document.getElementsByClassName('memory-card')[i].classList.remove('flip');
-    },2000);
+    },1000);
   }
 }
 
+// Dark Mode.
 function dark() {
   $('body').css('background-color', 'black');
 }
 
+// Light Mode. 
 function light() {
   $('body').css('background-color', 'darkgrey');
 }
-
-// (function shuffle() {
-//   cards.forEach(card => {
-//     let randomPos = Math.floor(Math.random() * 12);
-//     card.style.order = randomPos;
-//   });
-// })();
-
-// cards.forEach(card => card.addEventListener('click', flipCard));
